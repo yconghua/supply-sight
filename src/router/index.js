@@ -17,14 +17,17 @@ import costOverview from '../pages/cost/overview.vue'
 import costTrend from '../pages/cost/trend.vue'
 import alertRecords from '../pages/alert/records.vue'
 import alertRules from '../pages/alert/rules.vue'
-// 数据模拟器 / 应急疏散 / 关于平台
-import evacSim from '../pages/evacuation/simulation.vue'
+// 数据模拟器 / 关于平台
 import aboutIntro from '../pages/about/intro.vue'
 import aboutGuide from '../pages/about/guide.vue'
 import aboutFeedback from '../pages/about/feedback.vue'
 import aboutContact from '../pages/about/contact.vue'
 // 各分组落地页（大导航点击跳转：pages/<大组文件夹>/index.vue）
-import evacIndex from '../pages/evacuation/index.vue'
+// 四大模块的落地页是独立的「模块说明 + 快捷入口」页，不复用子页内容
+import supplierIndex from '../pages/supplier/index.vue'
+import inventoryIndex from '../pages/inventory/index.vue'
+import costIndex from '../pages/cost/index.vue'
+import alertIndex from '../pages/alert/index.vue'
 import aboutIndex from '../pages/about/index.vue'
 import simulatorPage from '../pages/simulator/index.vue'
 import { navTopItems, navGroups, defaultNavPath } from '../config/navConfig'
@@ -54,7 +57,6 @@ const childComponentMap = {
   'cost-trend': costTrend,
   'alert-records': alertRecords,
   'alert-rules': alertRules,
-  'evac-sim': evacSim,
   'about-intro': aboutIntro,
   'about-guide': aboutGuide,
   'about-feedback': aboutFeedback,
@@ -63,18 +65,17 @@ const childComponentMap = {
 }
 
 // 分组 key → 组件 映射：大导航点击跳转到各分组落地页（key 与 pages/<大组文件夹>/index.vue 对应）
-// 四大模块的落地页直接复用「总览 / 列表」页组件——点大导航就见到业务内容，不必再点一次。
+// 四大模块的落地页各自是独立的「模块说明 + 快捷入口」页面，不作为子页的替身。
 const groupComponentMap = {
-  'supplier': supplierOverview,
-  'inventory': inventoryOverview,
-  'cost': costOverview,
-  'alert': alertRecords,
-  'evac': evacIndex,
+  'supplier': supplierIndex,
+  'inventory': inventoryIndex,
+  'cost': costIndex,
+  'alert': alertIndex,
   'about': aboutIndex,
   'simulator': simulatorPage
 }
 
-// 分组落地页路由：由 navGroups 生成，path 为分组 key（如 module-a → /module-a），与子项路由并列挂载在 / 下
+// 分组落地页路由：由 navGroups 生成，path 为分组 key（如 supplier → /supplier），与子项路由并列挂载在 / 下
 const groupRoutes = navGroups
   .filter((g) => g.key && groupComponentMap[g.key])
   .map((g) => ({

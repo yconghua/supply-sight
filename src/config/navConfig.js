@@ -65,14 +65,6 @@ export const navGroups = [
       { key: 'sim-run', title: '模拟生成' }
     ]
   },
-  // 另一条独立科研线，与供应链模块并存
-  {
-    key: 'evac',
-    title: '应急疏散',
-    children: [
-      { key: 'evac-sim', title: '仿真模拟' }
-    ]
-  },
   {
     key: 'about',
     title: '关于平台',
