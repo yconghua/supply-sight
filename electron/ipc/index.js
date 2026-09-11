@@ -7,11 +7,13 @@
  */
 const authRoutes = require('./auth')
 const sysRoutes = require('./sys')
+const supplyRoutes = require('./supply')
 
 // 注册全部 IPC 路由
 function registerAll(ipcMain) {
   authRoutes.register(ipcMain) // 认证路由（auth:* 前缀）
   sysRoutes.register(ipcMain) // 系统 / 数据库路由（sys:* 前缀）
+  supplyRoutes.register(ipcMain) // 供应链业务路由（supply:* 前缀）
 }
 
 module.exports = { registerAll }

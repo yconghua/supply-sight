@@ -1,7 +1,7 @@
 /**
  * 预加载脚本
  *
- * 在主进程与渲染层之间架桥：只把「认证 / 系统」相关的 API 通过 contextBridge
+ * 在主进程与渲染层之间架桥：只把「认证 / 系统 / 供应链业务」相关的 API 通过 contextBridge
  * 暴露到 window.api，渲染层拿不到 ipcRenderer 本体，安全性更高。
  *
  * 调用统一由 createInvoke 工厂封装，消除每个方法重复的箭头函数样板：
@@ -44,5 +44,10 @@ contextBridge.exposeInMainWorld('api', {
     exportDb: createInvoke('sys:export-db'),
     openDevTools: createInvoke('sys:open-devtools'),
     checkForUpdates: createInvoke('sys:check-update')
+  },
+  // 供应链业务：数据总览 / 模拟生成记录（对应 ipc/supply.js，通道前缀 supply:*）
+  supply: {
+    overview: createInvoke('supply:overview'),
+    latestRun: createInvoke('supply:latest-run')
   }
 })

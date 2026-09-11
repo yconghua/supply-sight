@@ -107,3 +107,13 @@ export function deleteDb(id) {
   // 拼成单个对象 { id } 再传，匹配 preload 工厂「每方法至多一个 payload 对象」的约定
   return window.api.sys.deleteDb({ id })
 }
+
+// 供应链业务：数据总览（9 张业务表的存在性与行数）
+export function getSupplyOverview() {
+  return window.api.supply.overview()
+}
+
+// 供应链业务：最近一次数据生成记录（种子 / 规模 / 自检结果）
+export function getLatestSimRun() {
+  return window.api.supply.latestRun()
+}
