@@ -15,7 +15,7 @@ export const navTopItems = [
   { key: 'home', title: '首页' }
 ]
 
-// 下拉分组：业务模块占位（模块一 / 模块二 / 模块三）+ 应急疏散
+// 下拉分组：业务模块占位（模块一 / 模块二 / 模块三）+ 应急疏散 + 数据模拟器
 // 子项 key 与页面文件一一对应：pages/<大组文件夹>/<语义名>.vue
 export const navGroups = [
   {
@@ -46,6 +46,13 @@ export const navGroups = [
     title: '应急疏散',
     children: [
       { key: 'evac-sim', title: '仿真模拟' }
+    ]
+  },
+  {
+    key: 'simulator',
+    title: '数据模拟器',
+    children: [
+      { key: 'sim-run', title: '模拟生成' }
     ]
   },
   {

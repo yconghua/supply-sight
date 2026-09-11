@@ -45,9 +45,12 @@ contextBridge.exposeInMainWorld('api', {
     openDevTools: createInvoke('sys:open-devtools'),
     checkForUpdates: createInvoke('sys:check-update')
   },
-  // 供应链业务：数据总览 / 模拟生成记录（对应 ipc/supply.js，通道前缀 supply:*）
+  // 供应链业务：数据总览 / 数据模拟器（对应 ipc/supply.js，通道前缀 supply:*）
   supply: {
     overview: createInvoke('supply:overview'),
-    latestRun: createInvoke('supply:latest-run')
+    latestRun: createInvoke('supply:latest-run'),
+    simGenerate: createInvoke('supply:sim-generate'),
+    simStatus: createInvoke('supply:sim-status'),
+    simHistory: createInvoke('supply:sim-history')
   }
 })

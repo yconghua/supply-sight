@@ -25,6 +25,8 @@ import moduleBIndex from '../pages/module-b/index.vue'
 import moduleCIndex from '../pages/module-c/index.vue'
 import evacIndex from '../pages/evacuation/index.vue'
 import aboutIndex from '../pages/about/index.vue'
+// 数据模拟器：分组落地页与子项复用同一组件（只有一个功能页，不必再拆一个空壳落地页）
+import simulatorPage from '../pages/simulator/index.vue'
 import { navTopItems, navGroups, defaultNavPath } from '../config/navConfig'
 import { ROLE_ADMIN } from '../config/constants'
 import { useSession } from '../composables/useSession'
@@ -53,7 +55,8 @@ const childComponentMap = {
   'about-intro': aboutIntro,
   'about-guide': aboutGuide,
   'about-feedback': aboutFeedback,
-  'about-contact': aboutContact
+  'about-contact': aboutContact,
+  'sim-run': simulatorPage
 }
 
 // 分组 key → 组件 映射：大导航点击跳转到各分组落地页（key 与 pages/<大组文件夹>/index.vue 对应）
@@ -62,7 +65,8 @@ const groupComponentMap = {
   'module-b': moduleBIndex,
   'module-c': moduleCIndex,
   'evac': evacIndex,
-  'about': aboutIndex
+  'about': aboutIndex,
+  'simulator': simulatorPage
 }
 
 // 分组落地页路由：由 navGroups 生成，path 为分组 key（如 module-a → /module-a），与子项路由并列挂载在 / 下

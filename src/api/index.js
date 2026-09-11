@@ -117,3 +117,19 @@ export function getSupplyOverview() {
 export function getLatestSimRun() {
   return window.api.supply.latestRun()
 }
+
+// 数据模拟器：启动一次生成（立即返回，真正的生成在后台进行，用 getSimStatus 轮询进度）
+export function startSimGenerate(payload) {
+  return window.api.supply.simGenerate(payload)
+}
+
+// 数据模拟器：查询生成状态与进度
+export function getSimStatus() {
+  return window.api.supply.simStatus()
+}
+
+// 数据模拟器：生成历史列表
+export function getSimHistory(limit) {
+  // 拼成单个对象再传，匹配 preload 工厂「每方法至多一个 payload 对象」的约定
+  return window.api.supply.simHistory({ limit })
+}

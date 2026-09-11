@@ -73,6 +73,29 @@ class SimRunRepository extends BaseRepository {
   }
 
   /**
+   * 取最近一次「同种子」的成功生成记录。
+   * 用途：本次生成完成后，拿它的 selfcheck.fingerprint 与本次指纹比对，
+   * 从而把「同种子可复现」从一句承诺变成一次可验证的比对。
+   * @param {number} seed 随机种子
+   * @param {string} [excludeRunNo] 需要排除的运行编号（通常传本次运行编号）
+   * @returns {Object|null}
+   */
+  async findLatestBySeed(seed, excludeRunNo = '') {
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.execute(
+        `SELECT * FROM \`sim_run\`
+         WHERE seed = ? AND status = 'success' AND run_no <> ?
+         ORDER BY id DESC LIMIT 1`,
+        [seed, excludeRunNo]
+      )
+      return rows[0] || null
+    } finally {
+      release()
+    }
+  }
+
+  /**
    * 生成历史列表
    * @param {number} [limit] 最多返回条数，默认 20
    * @returns {Object[]} 按创建时间倒序
