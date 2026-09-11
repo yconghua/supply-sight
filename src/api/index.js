@@ -133,3 +133,48 @@ export function getSimHistory(limit) {
   // 拼成单个对象再传，匹配 preload 工厂「每方法至多一个 payload 对象」的约定
   return window.api.supply.simHistory({ limit })
 }
+
+// 供应商绩效指标（OTD / PPM / 平均延迟 / 综合评分）
+export function getSupplierMetrics(payload) {
+  return window.api.supply.supplierMetrics(payload)
+}
+
+// 库存健康度指标（期末金额 / 周转天数 / 呆滞 / ABC）
+export function getInventoryMetrics(payload) {
+  return window.api.supply.inventoryMetrics(payload)
+}
+
+// 采购成本指标（加权均价 / 价格指数 / 月度序列）
+export function getCostMetrics(payload) {
+  return window.api.supply.costMetrics(payload)
+}
+
+// 订单明细（交付与质量明细页）
+export function getOrderList(payload) {
+  return window.api.supply.orderList(payload)
+}
+
+// 首页概览（三个模块的关键数字汇总）
+export function getDashboard() {
+  return window.api.supply.dashboard()
+}
+
+// 预警中心：执行一次全量规则扫描
+export function scanAlerts() {
+  return window.api.supply.alertScan()
+}
+
+// 预警中心：预警记录列表
+export function getAlertRecords(payload) {
+  return window.api.supply.alertRecords(payload)
+}
+
+// 预警中心：更新处理状态
+export function updateAlertStatus(payload) {
+  return window.api.supply.alertUpdate(payload)
+}
+
+// 预警中心：规则清单（只读）
+export function getAlertRules(payload) {
+  return window.api.supply.alertRules(payload)
+}

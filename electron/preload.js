@@ -45,12 +45,21 @@ contextBridge.exposeInMainWorld('api', {
     openDevTools: createInvoke('sys:open-devtools'),
     checkForUpdates: createInvoke('sys:check-update')
   },
-  // 供应链业务：数据总览 / 数据模拟器（对应 ipc/supply.js，通道前缀 supply:*）
+  // 供应链业务：数据总览 / 数据模拟器 / 四大模块指标 / 预警中心（对应 ipc/supply.js，通道前缀 supply:*）
   supply: {
     overview: createInvoke('supply:overview'),
     latestRun: createInvoke('supply:latest-run'),
     simGenerate: createInvoke('supply:sim-generate'),
     simStatus: createInvoke('supply:sim-status'),
-    simHistory: createInvoke('supply:sim-history')
+    simHistory: createInvoke('supply:sim-history'),
+    supplierMetrics: createInvoke('supply:supplier-metrics'),
+    inventoryMetrics: createInvoke('supply:inventory-metrics'),
+    costMetrics: createInvoke('supply:cost-metrics'),
+    orderList: createInvoke('supply:order-list'),
+    dashboard: createInvoke('supply:dashboard'),
+    alertScan: createInvoke('supply:alert-scan'),
+    alertRecords: createInvoke('supply:alert-records'),
+    alertUpdate: createInvoke('supply:alert-update'),
+    alertRules: createInvoke('supply:alert-rules')
   }
 })

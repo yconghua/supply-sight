@@ -91,8 +91,28 @@ async function getLatestRun() {
   }
 }
 
+/**
+ * 订单明细列表（「交付与质量明细」页的数据源）。
+ * 支持按供应商 / 物料 / 状态筛选，一次带出订单、供应商、物料三方字段。
+ * @param {{ supplierId?: number, materialId?: number, status?: string, limit?: number }} filters
+ * @returns {Promise<{success: boolean, orders?: Object[], message?: string}>}
+ */
+async function getOrderDetails(filters = {}) {
+  try {
+    const orders = await purchaseOrderRepository.listWithDetail(filters)
+    return { success: true, orders }
+  } catch (err) {
+    console.error('[supplyService.getOrderDetails] 数据库异常:', err)
+    return {
+      success: false,
+      message: err && err.message ? err.message : '读取订单明细失败'
+    }
+  }
+}
+
 module.exports = {
   getOverview,
   getLatestRun,
+  getOrderDetails,
   TABLE_DEFS
 }

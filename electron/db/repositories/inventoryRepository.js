@@ -196,6 +196,99 @@ class InventoryRepository extends BaseRepository {
       release()
     }
   }
+
+  /**
+   * 取最新账期的全部物料快照（库存健康度的「当期视图」）。
+   * 先取最大账期再查该期数据，而不是用「当前时间」推算账期——
+   * 后者在某个月恰好没有生成快照时会查出空结果。
+   * 顺带 JOIN 物料表带出编码 / 名称 / ABC 分类，省掉上层再查一次。
+   * @returns {Promise<Object[]>}
+   */
+  async getLatestSnapshots() {
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.query(
+        `SELECT sn.*, m.code, m.name, m.category, m.unit, m.abc_class, m.reorder_point, m.moq
+         FROM \`inventory_snapshot\` sn
+         JOIN \`material\` m ON m.id = sn.material_id
+         WHERE sn.period = (SELECT MAX(period) FROM \`inventory_snapshot\`)
+         ORDER BY m.code ASC`
+      )
+      return rows
+    } finally {
+      release()
+    }
+  }
+
+  /**
+   * 按物料汇总出库量与出库金额（周转率的分子）。
+   * @param {{ months?: number }} [options] months 传值时只统计最近 N 个月
+   * @returns {Promise<Object[]>}
+   */
+  async getOutboundSummary(options = {}) {
+    const values = []
+    let windowClause = ''
+    if (options.months > 0) {
+      windowClause = 'AND flow_date >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)'
+      values.push(options.months)
+    }
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.query(
+        `SELECT material_id,
+                COALESCE(SUM(qty), 0) AS out_qty,
+                COALESCE(SUM(amount), 0) AS out_amount
+         FROM \`inventory_flow\`
+         WHERE flow_type = 'out' ${windowClause}
+         GROUP BY material_id`,
+        values
+      )
+      return rows
+    } finally {
+      release()
+    }
+  }
+
+  /**
+   * 按物料取最后一次出库日期，用于判断「近 N 天无出库」（呆滞的组合条件之一）。
+   * @returns {Promise<Object[]>} 元素含 material_id 与 last_out_date
+   */
+  async getLastOutboundDates() {
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.query(
+        `SELECT material_id, MAX(flow_date) AS last_out_date
+         FROM \`inventory_flow\`
+         WHERE flow_type = 'out'
+         GROUP BY material_id`
+      )
+      return rows
+    } finally {
+      release()
+    }
+  }
+
+  /**
+   * 按物料取平均库存（周转率的分母：期间出库金额 ÷ 平均库存金额）。
+   * period_count 一并返回，供上层把「期数」换算成天数。
+   * @returns {Promise<Object[]>}
+   */
+  async getAverageSnapshotByMaterial() {
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.query(
+        `SELECT material_id,
+                AVG(amount) AS avg_amount,
+                AVG(end_qty) AS avg_qty,
+                COUNT(*) AS period_count
+         FROM \`inventory_snapshot\`
+         GROUP BY material_id`
+      )
+      return rows
+    } finally {
+      release()
+    }
+  }
 }
 
 // 导出单例

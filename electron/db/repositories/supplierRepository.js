@@ -102,6 +102,52 @@ class SupplierRepository extends BaseRepository {
       release()
     }
   }
+
+  /**
+   * 供应商绩效聚合（供应商绩效模块与预警规则共用的唯一数据源）。
+   * 一次查出每家供应商的订单数、准时单数、到货量、不良量与平均延迟，
+   * OTD 与 PPM 这两个核心口径的「分子分母」都在这里用 SQL 算出来，避免上层各算各的。
+   *
+   * 窗口条件刻意写在 LEFT JOIN 的 ON 里而不是 WHERE：
+   * 这样即使某家供应商在窗口内没有订单，它依然会出现在结果里（各项为 0），
+   * 页面不会因为「供应商突然消失」而产生误会。
+   *
+   * @param {{ months?: number }} [options] months 传值时只统计最近 N 个月（对应规则的 window_months）
+   * @returns {Promise<Object[]>}
+   */
+  async getPerformanceMetrics(options = {}) {
+    const values = []
+    let windowClause = ''
+    if (options.months > 0) {
+      windowClause = 'AND po.order_date >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)'
+      values.push(options.months)
+    }
+    const { conn, release } = await this._acquire()
+    try {
+      const [rows] = await conn.query(
+        `SELECT s.id, s.code, s.name, s.category, s.credit_level, s.payment_days,
+                COUNT(DISTINCT po.id) AS order_count,
+                COUNT(DISTINCT CASE WHEN po.actual_date IS NOT NULL THEN po.id END) AS received_count,
+                COUNT(DISTINCT CASE WHEN po.actual_date IS NOT NULL AND po.actual_date <= po.promised_date
+                                    THEN po.id END) AS on_time_count,
+                COALESCE(SUM(poi.received_qty), 0) AS received_qty,
+                COALESCE(SUM(poi.qualified_qty), 0) AS qualified_qty,
+                COALESCE(SUM(poi.defect_qty), 0) AS defect_qty,
+                COALESCE(SUM(poi.amount), 0) AS total_amount,
+                COALESCE(AVG(CASE WHEN po.actual_date IS NOT NULL
+                                  THEN DATEDIFF(po.actual_date, po.promised_date) END), 0) AS avg_delay_days
+         FROM \`supplier\` s
+         LEFT JOIN \`purchase_order\` po ON po.supplier_id = s.id ${windowClause}
+         LEFT JOIN \`purchase_order_item\` poi ON poi.order_id = po.id
+         GROUP BY s.id, s.code, s.name, s.category, s.credit_level, s.payment_days
+         ORDER BY s.code ASC`,
+        values
+      )
+      return rows
+    } finally {
+      release()
+    }
+  }
 }
 
 // 导出单例

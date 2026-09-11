@@ -8,24 +8,24 @@ import ProfileInfoTab from '../pages/profile/tabs/info.vue'
 import ProfileUsersTab from '../pages/profile/tabs/users.vue'
 import ProfileSysTab from '../pages/profile/tabs/sys.vue'
 import ProfileWeblinksTab from '../pages/profile/tabs/weblinks.vue'
-// 各业务模块的子页面（每个小导航栏一个独立文件，不复用通用占位）
-import moduleAOne from '../pages/module-a/page-one.vue'
-import moduleATwo from '../pages/module-a/page-two.vue'
-import moduleBOne from '../pages/module-b/page-one.vue'
-import moduleCOne from '../pages/module-c/page-one.vue'
-import moduleCTwo from '../pages/module-c/page-two.vue'
+// 供应链业务四大模块的子页面（每个小导航栏一个独立文件）
+import supplierOverview from '../pages/supplier/overview.vue'
+import supplierDetail from '../pages/supplier/detail.vue'
+import inventoryOverview from '../pages/inventory/overview.vue'
+import inventoryDead from '../pages/inventory/dead.vue'
+import costOverview from '../pages/cost/overview.vue'
+import costTrend from '../pages/cost/trend.vue'
+import alertRecords from '../pages/alert/records.vue'
+import alertRules from '../pages/alert/rules.vue'
+// 数据模拟器 / 应急疏散 / 关于平台
 import evacSim from '../pages/evacuation/simulation.vue'
 import aboutIntro from '../pages/about/intro.vue'
 import aboutGuide from '../pages/about/guide.vue'
 import aboutFeedback from '../pages/about/feedback.vue'
 import aboutContact from '../pages/about/contact.vue'
 // 各分组落地页（大导航点击跳转：pages/<大组文件夹>/index.vue）
-import moduleAIndex from '../pages/module-a/index.vue'
-import moduleBIndex from '../pages/module-b/index.vue'
-import moduleCIndex from '../pages/module-c/index.vue'
 import evacIndex from '../pages/evacuation/index.vue'
 import aboutIndex from '../pages/about/index.vue'
-// 数据模拟器：分组落地页与子项复用同一组件（只有一个功能页，不必再拆一个空壳落地页）
 import simulatorPage from '../pages/simulator/index.vue'
 import { navTopItems, navGroups, defaultNavPath } from '../config/navConfig'
 import { ROLE_ADMIN } from '../config/constants'
@@ -46,11 +46,14 @@ const navTopRoutes = navTopItems.map((item) => ({
 
 // 子项 key → 组件 映射：新增子导航时在此登记对应页面组件（key 与 pages对应文件夹里面的 vue 对应）
 const childComponentMap = {
-  'mod-a-1': moduleAOne,
-  'mod-a-2': moduleATwo,
-  'mod-b-1': moduleBOne,
-  'mod-c-1': moduleCOne,
-  'mod-c-2': moduleCTwo,
+  'supplier-overview': supplierOverview,
+  'supplier-detail': supplierDetail,
+  'inventory-overview': inventoryOverview,
+  'inventory-dead': inventoryDead,
+  'cost-overview': costOverview,
+  'cost-trend': costTrend,
+  'alert-records': alertRecords,
+  'alert-rules': alertRules,
   'evac-sim': evacSim,
   'about-intro': aboutIntro,
   'about-guide': aboutGuide,
@@ -60,10 +63,12 @@ const childComponentMap = {
 }
 
 // 分组 key → 组件 映射：大导航点击跳转到各分组落地页（key 与 pages/<大组文件夹>/index.vue 对应）
+// 四大模块的落地页直接复用「总览 / 列表」页组件——点大导航就见到业务内容，不必再点一次。
 const groupComponentMap = {
-  'module-a': moduleAIndex,
-  'module-b': moduleBIndex,
-  'module-c': moduleCIndex,
+  'supplier': supplierOverview,
+  'inventory': inventoryOverview,
+  'cost': costOverview,
+  'alert': alertRecords,
   'evac': evacIndex,
   'about': aboutIndex,
   'simulator': simulatorPage
